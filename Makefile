@@ -1,6 +1,13 @@
 obj = main.o draw.o fish.o sleep.o llist.o utils.o braille.o
-# you may need to change -lncursesw to -lncurses if you are on MacOS
-link=-lncursesw -lm
+# FIXED: automatically detects darwin kernel (MacOS), uses ncurses instead of ncursesw
+#
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+	link=-lncurses -lm
+else
+	link=-lncursesw -lm
+endif
+
 ncursesw_macros=-D_DEFAULT_SOURCE -D_XOPEN_SOURCE=600
 #$$(ncursesw6-config --cflags)
 eflags=-Wpedantic -Wall -Wextra 
