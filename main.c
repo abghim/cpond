@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ncurses.h>
@@ -18,6 +19,8 @@ int height;
 
 int width_in_ch;
 int height_in_ch;
+
+double get_angle(Point v1, Point v2);
 
 enum flagsWithArgs {SET_FISH_COUNT, SET_FPS, NONE};
 
@@ -157,6 +160,9 @@ int main(int argc, char* argv[]) {
 		// is erase or clear better?
 		erase();
 
+		Point start_to_target = {0,0};
+		Point target_to_t = {0,0};
+
 		for (llist_Node* node = fishList.head; node != NULL; node = node->next) {
 			Fish* fish = (Fish*) node->data;
 
@@ -165,15 +171,42 @@ int main(int argc, char* argv[]) {
 				atTarget = fish_swim(fish);
 			}
 			// choose new random target if reached target
+			// FIXED: avoid crazy acrobatic moves; cap new target assignment angle to 90deg
 			if (atTarget) {
 				if (!braille_flag) {
-					t.x = rand() % width;
-					t.y = rand() % height;
+					do {
+						t.x = rand() % width;
+						t.y = rand() % height;
+
+						// check if crazy target is designated, i.e. target almost right behind the direction the fish is approximately facing
+						// we check this using dot product
+						//
+						start_to_target.x = fish->target.x-fish->start.x;	
+						start_to_target.y = fish->target.y-fish->start.y;
+
+						target_to_t.x = t.x-fish->target.x;
+						target_to_t.y = t.y-fish->target.y;
+
+
+					} while (get_angle(start_to_target, target_to_t)>M_PI/3);
+
+					
 				}
 				else {
-					t.x = rand() % braille_grid_width;
-					t.y = rand() % braille_grid_height;
+					do{
+						t.x = rand() % braille_grid_width;
+						t.y = rand() % braille_grid_height;
+
+						start_to_target.x = fish->target.x-fish->start.x;	
+						start_to_target.y = fish->target.y-fish->start.y;
+
+						target_to_t.x = t.x-fish->target.x;
+						target_to_t.y = t.y-fish->target.y;
+
+					} while (get_angle(start_to_target, target_to_t)>M_PI/3);
+
 				}
+
 				fish_target(fish, t);
 			}
 
@@ -202,4 +235,15 @@ int main(int argc, char* argv[]) {
 	curs_set(1);
 	endwin();
 	return 0;
+}
+
+double get_len_pt(Point v)
+{
+	return sqrt(v.x*v.x + v.y*v.y);
+}
+
+double get_angle(Point v1, Point v2) 
+{
+	return acos((v1.x*v2.x + v1.y*v2.y)/get_len_pt(v1)/get_len_pt(v2));
+
 }
