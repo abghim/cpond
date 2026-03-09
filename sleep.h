@@ -7,6 +7,6 @@
 
 // sleeps for a frame
 void sleep_set(int n);
-void frameSleep();
+void frameSleep(void);
 
 #endif

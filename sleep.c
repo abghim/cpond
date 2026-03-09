@@ -24,7 +24,7 @@
 		float npf = (float) NANO_IN_SEC / n;
 		spf.tv_nsec = npf;
 	}
-	void frameSleep() {
+	void frameSleep(void) {
 		nanosleep(&spf, NULL);
 	}
 #endif
