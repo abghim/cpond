@@ -178,30 +178,33 @@ int main(int argc, char* argv[]) {
 						t.x = rand() % width;
 						t.y = rand() % height;
 
+						// gives the fish extra space outside the screen to move
+
+						t.x = (int) (1.1*t.x) - (int)(width*0.05);
+						t.y = (int) (1.1*t.y) - (int)(height*0.05);
+
+
 						// check if crazy target is designated, i.e. target almost right behind the direction the fish is approximately facing
 						// we check this using dot product
 						//
-						start_to_target.x = fish->target.x-fish->start.x;	
-						start_to_target.y = fish->target.y-fish->start.y;
+						start_to_target = point_sub(fish->target, fish->start);
+						target_to_t = point_sub(t, fish->target);
 
-						target_to_t.x = t.x-fish->target.x;
-						target_to_t.y = t.y-fish->target.y;
-
+						
 
 					} while (get_angle(start_to_target, target_to_t)>M_PI/3);
 
 					
-				}
-				else {
+				} else {
 					do{
 						t.x = rand() % braille_grid_width;
 						t.y = rand() % braille_grid_height;
 
-						start_to_target.x = fish->target.x-fish->start.x;	
-						start_to_target.y = fish->target.y-fish->start.y;
+						t.x = (int) (1.1*t.x) - (int)(braille_grid_width*0.05);
+						t.y = (int) (1.1*t.y) - (int)(braille_grid_height*0.05);
 
-						target_to_t.x = t.x-fish->target.x;
-						target_to_t.y = t.y-fish->target.y;
+						start_to_target = point_sub(fish->target, fish->start);
+						target_to_t = point_sub(t, fish->target);
 
 					} while (get_angle(start_to_target, target_to_t)>M_PI/3);
 
